@@ -377,23 +377,8 @@ func (s *xlStorage) Healing() *healingTracker {
 // with O_DIRECT support, return an error if any and return
 // errUnsupportedDisk if there is no O_DIRECT support
 func (s *xlStorage) checkODirectDiskSupport() error {
-	// Check if backend is writable and supports O_DIRECT
-	uuid := mustGetUUID()
-	filePath := pathJoin(s.diskPath, ".writable-check-"+uuid+".tmp")
-	defer renameAll(filePath, pathJoin(s.diskPath, minioMetaTmpDeletedBucket, uuid))
-
-	w, err := s.openFileDirect(filePath, os.O_CREATE|os.O_WRONLY|os.O_EXCL)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(alignedBuf)
-	w.Close()
-	if err != nil {
-		if isSysErrInvalidArg(err) {
-			err = errUnsupportedDisk
-		}
-	}
-	return err
+	//Always return error
+	return errUnsupportedDisk
 }
 
 // readsMetadata and returns disk mTime information for xl.meta
